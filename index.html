@@ -23,7 +23,7 @@
     --purple: #af52de;
     --radius: 16px;
     --radius-sm: 10px;
-    --shadow: 0 2px 16px rgba(0,0,0,0.07);
+    --shadow: 0 1px 3px rgba(0,0,0,0.06);
     --nav-h: 80px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
@@ -102,7 +102,7 @@
   /* CARD WIDGET (list) */
   .card-list-item {
     background: var(--card); border-radius: var(--radius);
-    box-shadow: var(--shadow); margin: 0 16px 12px;
+    box-shadow: var(--shadow); margin: 0 16px 10px;
     overflow: hidden; animation: fadeUp .3s ease both;
     cursor: pointer; transition: transform .15s, box-shadow .15s;
     -webkit-user-select: none; user-select: none;
@@ -116,7 +116,7 @@
   /* CC HEADER */
   .cc-header {
     border-radius: var(--radius) var(--radius) 0 0;
-    padding: 18px 18px 14px;
+    padding: 15px 16px 13px;
     color: #fff; position: relative; overflow: hidden;
   }
   .cc-header::before {
@@ -132,18 +132,18 @@
   .cc-name { font-size: 15px; font-weight: 700; }
   .cc-chips { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
   .cc-chip { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; background: rgba(255,255,255,.2); }
-  .cc-amount { font-size: 32px; font-weight: 700; margin-top: 10px; letter-spacing: -1px; }
-  .cc-amount-label { font-size: 11px; opacity: .75; }
-  .cc-body { padding: 14px 18px 16px; }
+  .cc-amount { font-size: 27px; font-weight: 700; margin-top: 9px; letter-spacing: -.8px; }
+  .cc-amount-label { font-size: 11px; opacity: .7; margin-top: 1px; }
+  .cc-body { padding: 13px 16px 13px; }
   .cc-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
   .cc-stat { display: flex; flex-direction: column; }
   .cc-stat-val { font-size: 15px; font-weight: 600; }
   .cc-stat-lbl { font-size: 11px; color: var(--text2); margin-top: 1px; }
-  .bar-wrap { margin: 10px 0 8px; }
-  .bar-bg { background: var(--sep); border-radius: 4px; height: 6px; overflow: hidden; }
+  .bar-wrap { margin: 11px 0 0; }
+  .bar-bg { background: var(--sep); border-radius: 4px; height: 5px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 4px; transition: width .5s cubic-bezier(.4,0,.2,1); }
-  .bar-labels { display: flex; justify-content: space-between; margin-top: 4px; }
-  .bar-labels span { font-size: 11px; color: var(--text2); }
+  .bar-labels { display: flex; justify-content: space-between; margin-top: 5px; }
+  .bar-labels span { font-size: 11px; color: var(--text3); }
   .cc-days { display: flex; gap: 10px; margin-top: 8px; }
   .cc-day-badge {
     flex: 1; background: var(--bg); border-radius: var(--radius-sm);
@@ -603,17 +603,10 @@ function CardListItem({ card, expenses, msis, payments, onClick, onEdit }) {
   return (
     <div className="card-list-item" onClick={onClick}>
       <div className={`cc-header ${colorInfo.cls}`}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
-          <div>
-            <div className="cc-name">{card.name||'Sin nombre'}</div>
-            <div className="cc-chips">
-              <span className="cc-chip">{expenses.length} gastos</span>
-              {msis.length>0 && <span className="cc-chip">{msis.length} MSI</span>}
-            </div>
-          </div>
-          <button
-            style={{background:'rgba(255,255,255,.2)',border:'none',borderRadius:8,padding:'4px 10px',color:'#fff',fontSize:12,fontWeight:600,cursor:'pointer'}}
-            onClick={e=>{e.stopPropagation();onEdit(card);}}>editar</button>
+        <div className="cc-name">{card.name||'Sin nombre'}</div>
+        <div className="cc-chips">
+          <span className="cc-chip">{expenses.length} gastos</span>
+          {msis.length>0 && <span className="cc-chip">{msis.length} MSI</span>}
         </div>
         <div className="cc-amount">{fmt(totalToPay)}</div>
         <div className="cc-amount-label">Total a Pagar</div>
@@ -633,30 +626,36 @@ function CardListItem({ card, expenses, msis, payments, onClick, onEdit }) {
           <ProgressBar pct={usedPct}/>
           <div className="bar-labels"><span>{Math.round(usedPct)}% utilizado</span></div>
         </div>
-        {/* Cycle + days row */}
-        <div style={{display:'flex',gap:8,marginTop:8}}>
-          <div className="cc-day-badge" style={{flex:1,textAlign:'left',padding:'8px 10px'}}>
-            <div style={{fontSize:9,fontWeight:700,color:'var(--text2)',textTransform:'uppercase',letterSpacing:.5,marginBottom:2}}>Este ciclo</div>
-            <div style={{fontSize:14,fontWeight:700}}>{fmt(thisCycle)}</div>
-          </div>
-          {nextCycle > 0 ? (
-            <div className="cc-day-badge" style={{flex:1,textAlign:'left',padding:'8px 10px',background:'rgba(0,122,255,.07)'}}>
-              <div style={{fontSize:9,fontWeight:700,color:'var(--blue)',textTransform:'uppercase',letterSpacing:.5,marginBottom:2}}>⚡ Sig. ciclo</div>
-              <div style={{fontSize:14,fontWeight:700,color:'var(--blue)'}}>{fmt(nextCycle)}</div>
+        {/* Pie: ciclo + días, compacto y calmado */}
+        <div style={{
+          display:'flex', alignItems:'flex-end', justifyContent:'space-between',
+          marginTop:12, paddingTop:11, borderTop:'1px solid var(--sep)',
+        }}>
+          <div style={{display:'flex', gap:18}}>
+            <div>
+              <div style={{fontSize:15,fontWeight:600,letterSpacing:-.2}}>{fmt(thisCycle)}</div>
+              <div style={{fontSize:11,color:'var(--text3)',marginTop:1}}>Este ciclo</div>
             </div>
-          ) : (
-            <div className="cc-day-badge" style={{flex:1,textAlign:'left',padding:'8px 10px'}}>
-              <div style={{fontSize:9,fontWeight:700,color:'var(--text2)',textTransform:'uppercase',letterSpacing:.5,marginBottom:2}}>Sig. ciclo</div>
-              <div style={{fontSize:14,fontWeight:700,color:'var(--text3)'}}>—</div>
-            </div>
-          )}
-          <div className="cc-day-badge" style={{minWidth:52,padding:'8px 10px'}}>
-            <div className="num" style={{fontSize:18,color:cutDays===0?'var(--red)':cutDays<=5?'var(--red)':cutDays<=10?'var(--orange)':'var(--text)'}}>{cutDays}</div>
-            <div className="lbl">días corte</div>
+            {nextCycle > 0 && (
+              <div>
+                <div style={{fontSize:15,fontWeight:600,letterSpacing:-.2,color:'var(--blue)'}}>{fmt(nextCycle)}</div>
+                <div style={{fontSize:11,color:'var(--blue)',opacity:.8,marginTop:1}}>Sig. ciclo</div>
+              </div>
+            )}
           </div>
-          <div className="cc-day-badge" style={{minWidth:52,padding:'8px 10px'}}>
-            <div className="num" style={{fontSize:18,color:payDays<=3?'var(--red)':payDays<=7?'var(--orange)':'var(--text)'}}>{payDays}</div>
-            <div className="lbl">días pago</div>
+          <div style={{display:'flex', gap:16, textAlign:'right'}}>
+            <div>
+              <div style={{fontSize:15,fontWeight:600,letterSpacing:-.2,color:cutDays<=5?'var(--red)':cutDays<=10?'var(--orange)':'var(--text)'}}>
+                {cutDays}<span style={{fontSize:11,fontWeight:500,color:'var(--text3)'}}>d</span>
+              </div>
+              <div style={{fontSize:11,color:'var(--text3)',marginTop:1}}>Corte</div>
+            </div>
+            <div>
+              <div style={{fontSize:15,fontWeight:600,letterSpacing:-.2,color:payDays<=3?'var(--red)':payDays<=7?'var(--orange)':'var(--text)'}}>
+                {payDays}<span style={{fontSize:11,fontWeight:500,color:'var(--text3)'}}>d</span>
+              </div>
+              <div style={{fontSize:11,color:'var(--text3)',marginTop:1}}>Pago</div>
+            </div>
           </div>
         </div>
       </div>
@@ -698,20 +697,24 @@ function ExpensesTab({ expenses, cutDay, onToggle, onEdit }) {
   return (
     <>
       {/* ── Summary ── */}
-      <div style={{display:'flex',gap:10,padding:'4px 16px 8px'}}>
-        <div style={{flex:1,background:'var(--card)',borderRadius:'var(--radius-sm)',boxShadow:'var(--shadow)',padding:'10px 14px'}}>
-          <div style={{fontSize:10,fontWeight:700,color:'var(--text2)',textTransform:'uppercase',letterSpacing:.6,marginBottom:4}}>Este ciclo</div>
-          <div style={{fontSize:17,fontWeight:700,color:pendThis>0?'var(--red)':'var(--text)'}}>{fmt(pendThis)}</div>
+      <div style={{margin:'2px 16px 10px',background:'var(--card)',borderRadius:'var(--radius)',boxShadow:'var(--shadow)',padding:'12px 16px',display:'flex',alignItems:'center'}}>
+        <div style={{flex:1}}>
+          <div style={{fontSize:17,fontWeight:600,letterSpacing:-.3,color:pendThis>0?'var(--red)':'var(--text)'}}>{fmt(pendThis)}</div>
+          <div style={{fontSize:11,color:'var(--text3)',marginTop:2}}>Este ciclo</div>
         </div>
         {pendNext > 0 && (
-          <div style={{flex:1,background:'rgba(0,122,255,.06)',borderRadius:'var(--radius-sm)',boxShadow:'var(--shadow)',padding:'10px 14px'}}>
-            <div style={{fontSize:10,fontWeight:700,color:'var(--blue)',textTransform:'uppercase',letterSpacing:.6,marginBottom:4}}>⚡ Sig. ciclo</div>
-            <div style={{fontSize:17,fontWeight:700,color:'var(--blue)'}}>{fmt(pendNext)}</div>
-          </div>
+          <>
+            <div style={{width:1,alignSelf:'stretch',background:'var(--sep)'}}/>
+            <div style={{flex:1,paddingLeft:14}}>
+              <div style={{fontSize:17,fontWeight:600,letterSpacing:-.3,color:'var(--blue)'}}>{fmt(pendNext)}</div>
+              <div style={{fontSize:11,color:'var(--text3)',marginTop:2}}>Sig. ciclo</div>
+            </div>
+          </>
         )}
-        <div style={{flex:1,background:'var(--card)',borderRadius:'var(--radius-sm)',boxShadow:'var(--shadow)',padding:'10px 14px'}}>
-          <div style={{fontSize:10,fontWeight:700,color:'var(--text2)',textTransform:'uppercase',letterSpacing:.6,marginBottom:4}}>Pagado</div>
-          <div style={{fontSize:17,fontWeight:700,color:'var(--green)'}}>{fmt(paidAmt)}</div>
+        <div style={{width:1,alignSelf:'stretch',background:'var(--sep)'}}/>
+        <div style={{flex:1,paddingLeft:14}}>
+          <div style={{fontSize:17,fontWeight:600,letterSpacing:-.3,color:'var(--green)'}}>{fmt(paidAmt)}</div>
+          <div style={{fontSize:11,color:'var(--text3)',marginTop:2}}>Pagado</div>
         </div>
       </div>
 
@@ -722,8 +725,8 @@ function ExpensesTab({ expenses, cutDay, onToggle, onEdit }) {
           const groupIsNext = isNextCycle(group.date, cutDay);
           return (
             <div key={group.date} style={{marginBottom:4}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 20px 4px'}}>
-                <span style={{fontSize:11,fontWeight:700,color:'var(--text2)',letterSpacing:.6,textTransform:'uppercase'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 20px 5px'}}>
+                <span style={{fontSize:12,fontWeight:600,color:'var(--text3)',letterSpacing:.3,textTransform:'uppercase'}}>
                   {fmtDateLabel(group.date)}
                 </span>
                 {groupIsNext && (
@@ -877,11 +880,9 @@ function PaymentsTab({ payments, onEdit }) {
   const sorted = [...payments].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   return (
     <>
-      <div style={{display:'flex',gap:10,padding:'4px 16px 8px'}}>
-        <div style={{flex:1,background:'var(--card)',borderRadius:'var(--radius-sm)',boxShadow:'var(--shadow)',padding:'10px 14px'}}>
-          <div style={{fontSize:10,fontWeight:700,color:'var(--text2)',textTransform:'uppercase',letterSpacing:.6,marginBottom:4}}>Total abonado</div>
-          <div style={{fontSize:17,fontWeight:700,color:'var(--green)'}}>{fmt(total)}</div>
-        </div>
+      <div style={{margin:'2px 16px 10px',background:'var(--card)',borderRadius:'var(--radius)',boxShadow:'var(--shadow)',padding:'12px 16px'}}>
+        <div style={{fontSize:17,fontWeight:600,letterSpacing:-.3,color:'var(--green)'}}>{fmt(total)}</div>
+        <div style={{fontSize:11,color:'var(--text3)',marginTop:2}}>Total abonado</div>
       </div>
       <div className="list-wrap" style={{margin:'0 16px'}}>
         {sorted.map((p,idx)=>(
@@ -955,14 +956,18 @@ function CardDetail({ card, expenses, msis, payments, onBack, onEditCard,
           <ProgressBar pct={usedPct}/>
           <div className="bar-labels"><span>{Math.round(usedPct)}% utilizado</span></div>
         </div>
-        <div className="cc-days">
-          <div className="cc-day-badge">
-            <div className="num" style={{color:cutDays<=5?'var(--red)':cutDays<=10?'var(--orange)':'var(--text)'}}>{cutDays}</div>
-            <div className="lbl">días corte</div>
+        <div style={{display:'flex',gap:28,marginTop:12,paddingTop:11,borderTop:'1px solid var(--sep)'}}>
+          <div>
+            <div style={{fontSize:15,fontWeight:600,letterSpacing:-.2,color:cutDays<=5?'var(--red)':cutDays<=10?'var(--orange)':'var(--text)'}}>
+              {cutDays}<span style={{fontSize:11,fontWeight:500,color:'var(--text3)'}}>d</span>
+            </div>
+            <div style={{fontSize:11,color:'var(--text3)',marginTop:1}}>Días para el corte</div>
           </div>
-          <div className="cc-day-badge">
-            <div className="num" style={{color:payDays<=3?'var(--red)':payDays<=7?'var(--orange)':'var(--text)'}}>{payDays}</div>
-            <div className="lbl">días pago</div>
+          <div>
+            <div style={{fontSize:15,fontWeight:600,letterSpacing:-.2,color:payDays<=3?'var(--red)':payDays<=7?'var(--orange)':'var(--text)'}}>
+              {payDays}<span style={{fontSize:11,fontWeight:500,color:'var(--text3)'}}>d</span>
+            </div>
+            <div style={{fontSize:11,color:'var(--text3)',marginTop:1}}>Días para el pago</div>
           </div>
         </div>
       </div>
@@ -1263,30 +1268,26 @@ function PaymentForm({ initial, onSave, onDelete, onClose }) {
 function HomeSummary({ grandTotal, thisMonth, weekly }) {
   return (
     <div style={{
-      margin:'4px 16px 16px',
+      margin:'2px 16px 18px',
       borderRadius:'var(--radius)',
-      background:'linear-gradient(135deg,#0d47a1,#1976d2)',
-      color:'#fff', padding:'18px 18px 16px',
-      boxShadow:'0 4px 20px rgba(13,71,161,.3)',
-      position:'relative', overflow:'hidden',
+      background:'var(--card)',
+      boxShadow:'var(--shadow)',
+      padding:'16px 18px 14px',
       animation:'fadeUp .3s ease both',
     }}>
-      <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,.08)'}}/>
-      <div style={{position:'absolute',bottom:-40,right:30,width:90,height:90,borderRadius:'50%',background:'rgba(255,255,255,.06)'}}/>
-      <div style={{fontSize:11,fontWeight:700,opacity:.85,textTransform:'uppercase',letterSpacing:.6}}>Resumen general</div>
-      <div style={{fontSize:34,fontWeight:700,letterSpacing:-1,marginTop:6}}>{fmt(grandTotal)}</div>
-      <div style={{fontSize:12,opacity:.8,marginTop:1}}>Total a pagar · todas las tarjetas</div>
-      <div style={{display:'flex',gap:10,marginTop:14}}>
-        <div style={{flex:1,background:'rgba(255,255,255,.15)',borderRadius:12,padding:'10px 12px'}}>
-          <div style={{fontSize:19,fontWeight:700}}>{fmt(thisMonth)}</div>
-          <div style={{fontSize:10,opacity:.85,marginTop:2}}>Para pagar este mes</div>
+      <div style={{fontSize:11,fontWeight:600,color:'var(--text3)',textTransform:'uppercase',letterSpacing:.6}}>Total a pagar</div>
+      <div style={{fontSize:33,fontWeight:700,letterSpacing:-1,marginTop:3}}>{fmt(grandTotal)}</div>
+      <div style={{fontSize:12,color:'var(--text2)',marginTop:1}}>Todas las tarjetas</div>
+      <div style={{display:'flex',gap:28,marginTop:14,paddingTop:13,borderTop:'1px solid var(--sep)'}}>
+        <div>
+          <div style={{fontSize:19,fontWeight:600,letterSpacing:-.3}}>{fmt(thisMonth)}</div>
+          <div style={{fontSize:11,color:'var(--text3)',marginTop:2}}>Este mes</div>
         </div>
-        <div style={{flex:1,background:'rgba(255,255,255,.24)',borderRadius:12,padding:'10px 12px'}}>
-          <div style={{fontSize:19,fontWeight:700}}>{fmt(weekly)}</div>
-          <div style={{fontSize:10,opacity:.85,marginTop:2}}>A guardar por semana</div>
+        <div>
+          <div style={{fontSize:19,fontWeight:600,letterSpacing:-.3,color:'var(--blue)'}}>{fmt(weekly)}</div>
+          <div style={{fontSize:11,color:'var(--text3)',marginTop:2}}>Por semana</div>
         </div>
       </div>
-      <div style={{fontSize:10,opacity:.7,marginTop:10}}>Semanal = lo de este mes ÷ 4 semanas</div>
     </div>
   );
 }
